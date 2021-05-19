@@ -8,6 +8,8 @@ const Shopcart = () =>
   import ('../views/shopcart/Shopcart')
 const Profile = () =>
   import ('../views/profile/Profile')
+const Detail = () =>
+  import ('../views/detail/Detail')
 
 const routes = [{
   path: '',
@@ -24,6 +26,9 @@ const routes = [{
 }, {
   path: '/profile',
   component: Profile
+}, {
+  path: '/detail',
+  component: Detail
 }]
 
 const router = createRouter({

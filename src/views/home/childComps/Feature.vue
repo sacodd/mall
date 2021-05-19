@@ -15,5 +15,7 @@ export default {
 <style>
   .feature img {
     width: 100%;
+    position: relative;
+    right: -1px;
   }
 </style>

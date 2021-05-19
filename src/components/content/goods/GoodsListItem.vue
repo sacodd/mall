@@ -1,6 +1,6 @@
 <template>
-  <div class="goods-item">
-    <img :src="goodsItem.show.img" alt="">
+  <div class="goods-item" @click="itemClick">
+    <img :src="goodsItem.show.img" alt="" @load="imgLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import emitter from '@/components/common/mitt/Mitt'
+
 export default {
   props: {
     goodsItem: {
@@ -17,6 +19,20 @@ export default {
       default() {
         return {}
       }
+    }
+  },
+  methods: {
+    imgLoad() {
+      // 通过mitt插件实现事件总线的事件传递
+      emitter.emit('imgLoad')
+    },
+    itemClick() {
+      this.$router.push({
+        path: '/detail',
+        query: {
+          iid: this.goodsItem.iid
+        }
+      })
     }
   }
 }

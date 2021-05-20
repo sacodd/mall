@@ -70,7 +70,9 @@
         currentGoods: 'pop',
         isShow: false,
         fixedOffsetTop: 0,
-        isTabFiexd: false
+        isTabFiexd: false,
+        positionY: 0,
+        saveTop: 0
       }
     },
     computed: {
@@ -94,6 +96,12 @@
       emitter.on('imgLoad',() => {
           refresh()
       })
+    },
+    activated() {
+      this.saveTop = this.positionY
+    },
+    deactivayed() {
+      this.$refs.scroll.scrollTo(0, this.saveTop, 0)
     },
     methods: {
       // 数据请求
@@ -136,6 +144,7 @@
         this.isShow = position.y < -1000
         // tab-control是否吸顶
         this.isTabFiexd = position.y < - this.fixedOffsetTop
+        this.positionY = position.y
       },
       // 上拉加载
       loadMore() {

@@ -6,7 +6,7 @@
       </keep-alive>
     </router-view>
     <main-tab-bar></main-tab-bar>
-  </div> 
+  </div>
 </template>
 
 <script>

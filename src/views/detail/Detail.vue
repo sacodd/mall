@@ -1,15 +1,17 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-navbar"></detail-nav-bar>
-    <scroll class="detail-wrapper" ref="scroll">
+    <detail-nav-bar class="detail-navbar" @titleClick="titleClick" ref="nav"></detail-nav-bar>
+    <scroll class="detail-wrapper" ref="scroll" :probeType="3" @scrollPos="scrollPos">
       <detail-swiper :swiper="topSwiper"></detail-swiper>
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
       <detail-info :detailInfo="detailInfo" @detailImgLoad="detailImgLoad"></detail-info>
-      <detail-item-params :itemParams="itemParams"></detail-item-params>
-      <detail-comment-info :commentInfo="commentInfo"></detail-comment-info>
-      <goods-list :goods="recommend"></goods-list>
+      <detail-item-params :itemParams="itemParams" ref="param"></detail-item-params>
+      <detail-comment-info :commentInfo="commentInfo" ref="comment"></detail-comment-info>
+      <goods-list :goods="recommend" ref="recommend"></goods-list>
     </scroll>
+    <detail-bottom-bar @addCart="addCart"></detail-bottom-bar>
+    <back-top @click="backClick" v-show="isShow"></back-top>
   </div>
 </template>
 
@@ -21,10 +23,12 @@ import DetailShopInfo from './childComps/DetailShopInfo'
 import DetailInfo from './childComps/DetailInfo'
 import DetailItemParams from './childComps/DetailItemParams'
 import DetailCommentInfo from './childComps/DetailCommentInfo'
+import DetailBottomBar from './childComps/DeatailBottomBar'
 
 import Scroll from '@/components/common/scroll/Scroll'
 import GoodsList from '@/components/content/goods/GoodsList'
 import emitter from '@/components/common/mitt/Mitt'
+import BackTop from '@/components/content/backtop/BackTop'
 
 import { debouce } from '@/common/utils'
 
@@ -34,6 +38,7 @@ import { getDetail, getRecommend, Goods, Shop, GoodsParam } from '@/network/deta
 
 export default {
   name: 'detail',
+  emits: ['click'],
   components: {
     DetailNavBar,
     DetailSwiper,
@@ -42,8 +47,10 @@ export default {
     DetailInfo,
     DetailItemParams,
     DetailCommentInfo,
+    DetailBottomBar,
     Scroll,
-    GoodsList
+    GoodsList,
+    BackTop
   },
   data() {
     return {
@@ -54,7 +61,10 @@ export default {
       detailInfo: {},
       itemParams: {},
       commentInfo: {},
-      recommend: []
+      recommend: [],
+      topY: [],
+      getTopY: null,
+      isShow: false,
     }
   },
   created() {
@@ -76,11 +86,18 @@ export default {
       if(res.result.rate.cRate !== 0) {
         this.commentInfo = res.result.rate.list[0]
       }
-      // 获取推荐信息
-      getRecommend().then(res => {
-        this.recommend.push(...res.data.list)
-      })
     })
+    // 获取推荐信息
+    getRecommend().then(res => {
+      this.recommend.push(...res.data.list)
+    })
+    // 获取各个组件的offsetTop
+    this.getTopY = debouce(() => {
+      this.topY[0] = 0
+      this.topY[1] = this.$refs.param.$el.offsetTop - 44 
+      this.topY[2] = this.$refs.comment.$el.offsetTop - 44
+      this.topY[3] = this.$refs.recommend.$el.offsetTop - 44
+    }, 50)
   },
   mounted() {
     let refresh = debouce(this.$refs.scroll.refresh, 100)
@@ -91,6 +108,40 @@ export default {
   methods: {
     detailImgLoad() {
       this.$refs.scroll.refresh()
+      this.getTopY()
+    },
+    titleClick(index) {
+      this.$refs.scroll.scrollTo(0, -this.topY[index], 500)
+    },
+    scrollPos(position) {
+      let positionY = - position.y
+      if(positionY >= this.topY[0] && positionY < this.topY[1]) {
+        this.$refs.nav.currentIndex = 0
+      } else if(positionY >= this.topY[1] && positionY < this.topY[2]) {
+        this.$refs.nav.currentIndex = 1
+      } else if(positionY >= this.topY[2] && positionY < this.topY[3]) {
+        this.$refs.nav.currentIndex = 2
+      } else if(positionY >= this.topY[3]) {
+        this.$refs.nav.currentIndex = 3
+      }
+      // 监听backTo
+      this.isShow = position.y < -1000
+    },
+    // 实现backTop
+    backClick() {
+      this.$refs.scroll.scrollTo(0, 0, 500)
+    },
+    addCart() {
+      // 获取购物车需要展示的信息
+      const product = {}
+      product.img = this.topSwiper[0]
+      product.title = this.goods.title
+      product.desc = this.goods.desc
+      product.price = this.goods.realPrice
+      product.iid = this.iid
+
+      // 将商品添加进入购物车
+      this.$store.dispatch('addCart', product)
     }
   }
 }
@@ -112,6 +163,6 @@ export default {
   }
 
   .detail-wrapper {
-    height: calc(100% - 44px);
+    height: calc(100% - 44px - 55px);
   }
 </style>

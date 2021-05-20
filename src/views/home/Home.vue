@@ -43,7 +43,7 @@
   import Feature from './childComps/Feature'
 
   import {getHomeMultidata, getHomeGoods} from '@/network/home'
-  import {debounce} from '@/common/utils'
+  import {debouce} from '@/common/utils'
   
   export default {
     name: 'home',
@@ -90,7 +90,7 @@
       // 监听图片加载
       // 通过mitt插件实现事件总线的事件接受
       // 通过防抖函数减少refresh()的调用次数
-      const refresh = debounce(this.$refs.scroll.refresh, 100)
+      const refresh = debouce(this.$refs.scroll.refresh, 100)
       emitter.on('imgLoad',() => {
           refresh()
       })

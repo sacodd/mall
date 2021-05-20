@@ -138,8 +138,9 @@ export default {
     height: 40px;
     width: 120px;
     text-align: center;
-    background-color: #ccc;
+    background-color: #bbb;
     line-height: 40px;
     border-radius: 20px;
+    color: #fff;
   }
 </style>

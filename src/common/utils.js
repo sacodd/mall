@@ -1,5 +1,5 @@
 // 防抖函数debounce
-export function debounce(fun, delay) {
+export function debouce(fun, delay) {
   let timer = null
   return function(...args) {
     if (timer) clearTimeout(timer)

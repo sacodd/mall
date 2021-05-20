@@ -8,6 +8,7 @@
       <detail-info :detailInfo="detailInfo" @detailImgLoad="detailImgLoad"></detail-info>
       <detail-item-params :itemParams="itemParams"></detail-item-params>
       <detail-comment-info :commentInfo="commentInfo"></detail-comment-info>
+      <goods-list :goods="recommend"></goods-list>
     </scroll>
   </div>
 </template>
@@ -22,8 +23,14 @@ import DetailItemParams from './childComps/DetailItemParams'
 import DetailCommentInfo from './childComps/DetailCommentInfo'
 
 import Scroll from '@/components/common/scroll/Scroll'
+import GoodsList from '@/components/content/goods/GoodsList'
+import emitter from '@/components/common/mitt/Mitt'
 
-import { getDetail, Goods, Shop, GoodsParam } from '@/network/detail'
+import { debouce } from '@/common/utils'
+
+import {itemListenerMixin} from '@/common/mixin'
+
+import { getDetail, getRecommend, Goods, Shop, GoodsParam } from '@/network/detail'
 
 export default {
   name: 'detail',
@@ -35,7 +42,8 @@ export default {
     DetailInfo,
     DetailItemParams,
     DetailCommentInfo,
-    Scroll
+    Scroll,
+    GoodsList
   },
   data() {
     return {
@@ -45,7 +53,8 @@ export default {
       shop: {},
       detailInfo: {},
       itemParams: {},
-      commentInfo: {}
+      commentInfo: {},
+      recommend: []
     }
   },
   created() {
@@ -53,7 +62,6 @@ export default {
     this.iid = this.$route.query.iid
     // 通过iid请求数据
     getDetail(this.iid).then(res => {
-      console.log(res);
       // 获取轮播图数据
       this.topSwiper = res.result.itemInfo.topImages
       // 获取商品基本信息
@@ -68,7 +76,16 @@ export default {
       if(res.result.rate.cRate !== 0) {
         this.commentInfo = res.result.rate.list[0]
       }
-      console.log(this.commentInfo);
+      // 获取推荐信息
+      getRecommend().then(res => {
+        this.recommend.push(...res.data.list)
+      })
+    })
+  },
+  mounted() {
+    let refresh = debouce(this.$refs.scroll.refresh, 100)
+    emitter.on('detailImgLoad', () => {
+      refresh()
     })
   },
   methods: {

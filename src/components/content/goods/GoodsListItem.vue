@@ -1,6 +1,6 @@
 <template>
   <div class="goods-item" @click="itemClick">
-    <img :src="goodsItem.show.img" alt="" @load="imgLoad">
+    <img :src="showImg" alt="" @load="imgLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -21,10 +21,19 @@ export default {
       }
     }
   },
+  computed: {
+    showImg() {
+      return this.goodsItem.show ? this.goodsItem.show.img : this.goodsItem.image
+    }
+  },
   methods: {
     imgLoad() {
       // 通过mitt插件实现事件总线的事件传递
-      emitter.emit('imgLoad')
+      if(this.$route.path.indexOf('/home') != -1) {
+        emitter.emit('imgLoad')
+      } else if(this.$route.path.indexOf('/detail') != -1) {
+        emitter.emit('detailImgLoad')
+      }
     },
     itemClick() {
       this.$router.push({

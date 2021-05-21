@@ -7,7 +7,7 @@
     <div class="cart-item-right">
       <div class="cart-title">{{item.title}}</div>
       <div class="cart-desc">{{item.desc}}</div>
-      <div class="cart-bottom">
+      <div class="cart-item-bottom">
         <div class="item-price">￥{{item.price}}</div>
         <div class="item-count">×{{item.count}}</div>
       </div>
@@ -31,9 +31,6 @@ export default {
       }
     }
   },
-  created() {
-    console.log(this.item);
-  },
   methods: {
     checkClick() {
       this.item.checked = !this.item.checked
@@ -48,6 +45,10 @@ export default {
     padding: 8px 10px;
     border-bottom: 1px solid #ccc;
     display: flex;
+  }
+
+  .cart-check {
+    margin-top: 45px;
   }
 
   .cart-item-left img {
@@ -74,7 +75,7 @@ export default {
     font-size: 24px;
   }
 
-  .cart-bottom {
+  .cart-item-bottom {
     position: absolute;
     bottom: 5px;
     left: 0;
@@ -89,5 +90,6 @@ export default {
 
   .item-count {
     float: right;
+    margin-right: 10px;
   }
 </style>

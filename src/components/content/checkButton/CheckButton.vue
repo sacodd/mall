@@ -17,11 +17,10 @@ export default {
 
 <style>
   .check-button {
-    margin-top: 45px;
     height: 20px;
     width: 20px;
     border-radius: 10px;
-    border: 2px solid #aaa
+    border: 2px solid #aaa;
   }
 
   .check-button img {

@@ -29,7 +29,7 @@ export default {
 
 <style>
   .cart-list {
-    height: calc(100% - 44px - 49px);
+    height: calc(100% - 44px - 49px - 40px);
   }
 
   .cart-wrapper {

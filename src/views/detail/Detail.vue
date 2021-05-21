@@ -12,6 +12,7 @@
     </scroll>
     <detail-bottom-bar @addCart="addCart"></detail-bottom-bar>
     <back-top @click="backClick" v-show="isShow"></back-top>
+    <toast :message="message" :isShow="toastShow"></toast>
   </div>
 </template>
 
@@ -29,10 +30,9 @@ import Scroll from '@/components/common/scroll/Scroll'
 import GoodsList from '@/components/content/goods/GoodsList'
 import emitter from '@/components/common/mitt/Mitt'
 import BackTop from '@/components/content/backtop/BackTop'
+import Toast from '@/components/common/toast/Toast'
 
 import { debouce } from '@/common/utils'
-
-import {itemListenerMixin} from '@/common/mixin'
 
 import { getDetail, getRecommend, Goods, Shop, GoodsParam } from '@/network/detail'
 
@@ -50,7 +50,8 @@ export default {
     DetailBottomBar,
     Scroll,
     GoodsList,
-    BackTop
+    BackTop,
+    Toast
   },
   data() {
     return {
@@ -65,6 +66,8 @@ export default {
       topY: [],
       getTopY: null,
       isShow: false,
+      message: '',
+      toastShow: false
     }
   },
   created() {
@@ -141,7 +144,14 @@ export default {
       product.iid = this.iid
 
       // 将商品添加进入购物车
-      this.$store.dispatch('addCart', product)
+      this.$store.dispatch('addCart', product).then(res => {
+        this.message = res
+        this.toastShow = true
+        setTimeout(() => {
+          this.message = ''
+          this.toastShow = false
+        }, 1000);
+      })
     }
   }
 }

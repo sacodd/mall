@@ -27,6 +27,7 @@ export default {
     padding: 10px 10px;
     text-align: center;
     font-size: 12px;
+    overflow: auto;
   }
 
   .header-item {

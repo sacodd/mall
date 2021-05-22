@@ -23,7 +23,14 @@ export default {
   },
   computed: {
     showImg() {
-      return this.goodsItem.show ? this.goodsItem.show.img : this.goodsItem.image
+      // return this.goodsItem.show ? this.goodsItem.show.img : this.goodsItem.image
+      if(this.goodsItem.show) {
+        return this.goodsItem.show.img
+      } else if(this.goodsItem.image) {
+        return this.goodsItem.image
+      } else {
+        return this.goodsItem.img
+      }
     }
   },
   methods: {
@@ -31,7 +38,9 @@ export default {
       // 通过mitt插件实现事件总线的事件传递
       if(this.$route.path.indexOf('/home') != -1) {
         emitter.emit('imgLoad')
-      } else if(this.$route.path.indexOf('/detail') != -1) {
+      } else if(this.$route.path.indexOf('/category') != -1) {
+        emitter.emit('categoryLoad')
+      }else if(this.$route.path.indexOf('/detail') != -1) {
         emitter.emit('detailImgLoad')
       }
     },

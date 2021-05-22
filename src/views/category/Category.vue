@@ -7,8 +7,10 @@
     </nav-bar>
     <div class="category-content">
       <tab-menu :categories="categories" @menubtn="menubtn"></tab-menu>
-      <scroll class="category-wrapper">
+      <scroll class="category-wrapper" ref="scroll">
         <category-header :showHeader="showHeader"></category-header>
+        <tab-control :title="['综合', '新品', '销售']" @tabItemClick="tabItemClick"></tab-control>
+        <goods-list :goods="showDetail"></goods-list>
       </scroll>
     </div>
   </div>
@@ -16,24 +18,32 @@
 
 <script>
 import NavBar from '@/components/common/navbar/NavBar'
+import tabControl from '@/components/content/tabControl/TabControl'
+import GoodsList from '@/components/content/goods/GoodsList'
 
 import TabMenu from './childComps/TabMenu'
 import CategoryHeader from './childComps/CategoryHeader'
 
 import Scroll from '@/components/common/scroll/Scroll'
+import emitter from '@/components/common/mitt/Mitt'
+import {debouce} from '@/common/utils'
 
-import {getCategory, getCategoryHeader} from '@/network/category'
+import {getCategory, getCategoryHeader, getCategoryDetail} from '@/network/category'
 
 export default {
   data() {
     return {
       categories: [],
       categoryData: [],
-      currentIndex: -1
+      currentIndex: -1,
+      showIndex: -1,
+      currentGoods: 'pop'
     }
   },
   components: {
     NavBar,
+    tabControl,
+    GoodsList,
     TabMenu,
     CategoryHeader,
     Scroll
@@ -57,11 +67,37 @@ export default {
       // 获取第一份数据
       this._getCategoryHeader(0)
     })
+
+    
+  },
+  mounted() {
+    let refresh = debouce(this.$refs.scroll.refresh, 200)
+    emitter.on('categoryLoad', () => {
+      refresh()
+    })
   },
   computed: {
     showHeader () {
       if(this.currentIndex !== -1) {
         return this.categoryData[this.currentIndex].categoryHeader
+      } else {
+        return []
+      }
+    },
+    showDetail () {
+      if(this.showIndex !== -1) {
+        switch(this.showIndex) {
+          case 0: 
+            this.currentGoods = 'pop'
+            break
+          case 1:
+            this.currentGoods = 'new'
+            break
+          case 2:
+            this.currentGoods = 'sell'
+            break
+        }
+        return this.categoryData[this.currentIndex].categoryDetail[this.currentGoods]
       } else {
         return []
       }
@@ -77,8 +113,23 @@ export default {
       const maitKey = this.categories[index].maitKey
       getCategoryHeader(maitKey).then(res => {
         this.categoryData[this.currentIndex].categoryHeader = res.data.list
-        console.log(this.categoryData[this.currentIndex].categoryHeader);
       })
+      // 获取详情数据
+      this._getCategoryDetail('pop')
+      this._getCategoryDetail('new')
+      this._getCategoryDetail('sell')
+    },
+    _getCategoryDetail (type) {
+      const miniWallkey = this.categories[this.currentIndex].miniWallkey
+      getCategoryDetail(miniWallkey, type).then(res => {
+        this.categoryData[this.currentIndex].categoryDetail[type] = res
+        if(type = 'pop') {
+          this.showIndex = 0
+        }
+      })
+    },
+    tabItemClick (index) {
+      this.showIndex = index
     }
   }
 }
@@ -100,5 +151,9 @@ export default {
   .category-wrapper {
     flex: 1;
     height: calc(100vh - 44px - 49px);
+  }
+
+  .category-control {
+    float: left;
   }
 </style>

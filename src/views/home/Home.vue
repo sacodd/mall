@@ -92,9 +92,9 @@
       // 监听图片加载
       // 通过mitt插件实现事件总线的事件接受
       // 通过防抖函数减少refresh()的调用次数
-      const refresh = debouce(this.$refs.scroll.refresh, 100)
+      const refresh = debouce(this.$refs.scroll.refresh, 200)
       emitter.on('imgLoad',() => {
-          refresh()
+        refresh()
       })
     },
     activated() {

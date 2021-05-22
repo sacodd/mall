@@ -1,13 +1,13 @@
 <template>
-    <div class="slide">
-      <slot></slot>
-    </div>
+  <div class="slide">
+    <slot></slot>
+  </div>
 </template>
 
 <script>
-	export default {
-		name: "Slide"
-	}
+export default {
+
+}
 </script>
 
 <style>
@@ -16,7 +16,7 @@
     flex-shrink: 0;
   }
 
-  .slide img{
+  .slide img {
     width: 100%;
   }
 </style>

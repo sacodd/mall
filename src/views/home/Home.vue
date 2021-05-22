@@ -173,6 +173,7 @@
   right: 0;
   left: 0;
   z-index: 3;
+  font-size: 20px;
 }
 .fixed-tab-control {
   position: fixed;

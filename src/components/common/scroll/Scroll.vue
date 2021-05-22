@@ -1,7 +1,7 @@
 <template>
   <!-- 普通标签中的ref，通过$refs得到的是这个标签 -->
   <div ref="wrapper">
-    <div class="content">
+    <div class="content clear-fix">
       <slot></slot>
     </div>
   </div>

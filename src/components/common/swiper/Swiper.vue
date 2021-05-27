@@ -41,7 +41,7 @@ export default {
       this.handleDom()
       // 开始轮播图
       this.setTimer()
-    }, 200)
+    }, 500)
   },
   methods: {
 
